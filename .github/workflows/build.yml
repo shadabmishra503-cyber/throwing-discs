@@ -23,6 +23,28 @@ jobs:
       - name: Build
         run: gradle build --stacktrace
 
+      - name: Inspect APIs (diagnostic)
+        if: always()
+        continue-on-error: true
+        run: |
+          set +e
+          MC=""
+          for j in $(find ~/.gradle -name '*.jar' -size +1M); do
+            if unzip -l "$j" 2>/dev/null | grep -q 'net/minecraft/world/entity/Entity.class'; then MC="$j"; break; fi
+          done
+          echo "MC jar: $MC"
+          echo "== class search"
+          for j in $(find ~/.gradle -name '*.jar'); do
+            unzip -l "$j" 2>/dev/null | grep -E 'ThrownItemRenderer|ItemSupplier|/ConstantValue|CreativeModeTabEvents|ItemGroupEvents|LootTableEvents|EntityRendererRegistry|/NestedLootTable' | awk -v j="$j" '{print j": "$4}'
+          done | sed 's|.*/caches/||' | sort -u
+          echo "== javap"
+          for c in net.minecraft.world.entity.Entity net.minecraft.world.entity.LivingEntity net.minecraft.world.entity.player.Player net.minecraft.sounds.SoundEvents net.minecraft.world.level.Level net.minecraft.world.level.storage.loot.entries.NestedLootTable net.minecraft.world.entity.projectile.ItemSupplier net.minecraft.client.renderer.entity.ThrownItemRenderer net.minecraft.world.entity.player.Inventory net.minecraft.world.item.Item\$Properties; do
+            echo "-- $c"; javap -public -cp "$MC" "$c" 2>&1 | grep -E "drop|knockback|playSound|lootTableReference|ThrownItemRenderer\(|getItem\(\)|getSelectedSlot|repairable|enchantable|durability|setId|class |interface |TRIDENT_|WOOL_HIT|SLIME_BLOCK_HIT|BELL_BLOCK|ITEM_PICKUP|igniteForSeconds| is\(|hurtServer|damageSources|getEyeHeight"
+          done
+          echo "== number providers"; unzip -l "$MC" | grep -i 'storage/loot/providers/number' | awk '{print $4}'
+          echo "== fabric creative/loot"
+          for j in $(find ~/.gradle -name 'fabric-item-group*.jar' -o -name 'fabric-creative*.jar' -o -name 'fabric-loot-api*.jar'); do echo "$j"; unzip -l "$j" | grep -E 'api/.*(Events|Event)\.class' | awk '{print $4}'; done
+
       - name: Upload mod jar
         uses: actions/upload-artifact@v4
         with:
