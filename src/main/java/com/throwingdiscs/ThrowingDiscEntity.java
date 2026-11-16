@@ -392,6 +392,11 @@ public class ThrowingDiscEntity extends Entity implements ItemSupplier {
 		level().playSound(null, at.x, at.y, at.z, sound, SoundSource.PLAYERS, volume, pitch * jitter);
 	}
 
+	private void play(Holder<SoundEvent> sound, Vec3 at, float pitch, float volume) {
+		float jitter = 0.92F + this.random.nextFloat() * 0.16F;
+		level().playSound(null, at.x, at.y, at.z, sound, SoundSource.PLAYERS, volume, pitch * jitter);
+	}
+
 	private static Vec3 catchPoint(Player owner) {
 		return owner.position().add(0, 0.95, 0);
 	}
@@ -423,7 +428,8 @@ public class ThrowingDiscEntity extends Entity implements ItemSupplier {
 		}
 		inv.add(item);
 		if (!item.isEmpty()) {
-			owner.drop(item, false);
+			Vec3 at = owner.position();
+			level().addFreshEntity(new ItemEntity(level(), at.x, at.y + 0.5, at.z, item));
 		}
 	}
 
@@ -464,7 +470,8 @@ public class ThrowingDiscEntity extends Entity implements ItemSupplier {
 		DamageSource source = level.damageSources().thrown(this, owner);
 		if (!target.hurtServer(level, source, (float) damage)) return;
 		double kb = 0.35 + 0.5 * knockback;
-		target.knockback(kb, -dirN.x, -dirN.z); // LivingEntity#knockback takes the direction to push *away from*
+		target.push(dirN.x * kb, 0.2, dirN.z * kb);
+		target.hurtMarked = true; // make sure players get the push
 		if (fireAspect > 0) {
 			target.igniteForSeconds(4.0F * fireAspect);
 		}
