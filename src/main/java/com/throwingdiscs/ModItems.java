@@ -3,7 +3,7 @@ package com.throwingdiscs;
 import java.util.EnumMap;
 import java.util.Map;
 
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -28,7 +28,7 @@ public final class ModItems {
 			DISCS.put(tier, Registry.register(BuiltInRegistries.ITEM, key, new ThrowingDiscItem(props, tier)));
 		}
 
-		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.COMBAT).register(entries -> {
+		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.COMBAT).register(entries -> {
 			for (DiscTier tier : DiscTier.values()) {
 				entries.accept(DISCS.get(tier));
 			}

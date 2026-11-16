@@ -8,7 +8,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.NestedLootTable;
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 
 public class ThrowingDiscsMod implements ModInitializer {
 	public static final String MOD_ID = "tdisc";
@@ -31,11 +30,18 @@ public class ThrowingDiscsMod implements ModInitializer {
 		// pool instead, so none of the vanilla rewards are lost. The pool just points at our own small
 		// loot tables (data/tdisc/loot_table/...), which hold the odds and the enchanting.
 		LootTableEvents.MODIFY.register((key, builder, source, registries) -> {
+			ResourceKey<LootTable> extra = null;
 			if (key.equals(VANILLA_RARE)) {
-				builder.withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(NestedLootTable.lootTableReference(DISC_RARE)));
+				extra = DISC_RARE;
 			} else if (key.equals(VANILLA_OMINOUS_RARE)) {
-				builder.withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(NestedLootTable.lootTableReference(DISC_OMINOUS_RARE)));
+				extra = DISC_OMINOUS_RARE;
 			}
+			if (extra == null) return;
+			ResourceKey<LootTable> wanted = extra;
+			// Loot entries now reference tables by holder, so look ours up (rolls default to 1).
+			registries.lookup(Registries.LOOT_TABLE)
+					.flatMap(lookup -> lookup.get(wanted))
+					.ifPresent(holder -> builder.withPool(LootPool.lootPool().add(NestedLootTable.lootTableReference(holder))));
 		});
 	}
 }

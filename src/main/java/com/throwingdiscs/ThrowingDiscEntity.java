@@ -471,7 +471,6 @@ public class ThrowingDiscEntity extends Entity implements ItemSupplier {
 		if (!target.hurtServer(level, source, (float) damage)) return;
 		double kb = 0.35 + 0.5 * knockback;
 		target.push(dirN.x * kb, 0.2, dirN.z * kb);
-		target.hurtMarked = true; // make sure players get the push
 		if (fireAspect > 0) {
 			target.igniteForSeconds(4.0F * fireAspect);
 		}
