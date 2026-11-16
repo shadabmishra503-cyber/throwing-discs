@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smelting",
+  "category": "equipment",
+  "ingredient": "tdisc:copper_throwing_disc",
+  "result": {
+    "id": "minecraft:copper_nugget"
+  },
+  "experience": 0.1,
+  "cookingtime": 200
+}

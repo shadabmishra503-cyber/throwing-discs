@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "tdisc:item/netherite_throwing_disc"
+  }
+}

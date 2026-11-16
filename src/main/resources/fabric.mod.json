@@ -1,0 +1,20 @@
+{
+	"schemaVersion": 1,
+	"id": "tdisc",
+	"version": "${version}",
+	"name": "Throwing Discs",
+	"description": "Copper, iron, golden, diamond and netherite throwing discs. They fly straight, ricochet off hard blocks, pierce every mob in their path, then curve back to you like a boomerang. Port of the Bedrock add-on by Ace.",
+	"authors": ["Ace (original Bedrock add-on)"],
+	"license": "All-Rights-Reserved",
+	"environment": "*",
+	"entrypoints": {
+		"main": ["com.throwingdiscs.ThrowingDiscsMod"],
+		"client": ["com.throwingdiscs.client.ThrowingDiscsClient"]
+	},
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}
